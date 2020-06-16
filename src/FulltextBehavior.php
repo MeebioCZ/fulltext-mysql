@@ -29,7 +29,10 @@ class FulltextBehavior extends Behavior
 
     public function queryMethods($builder) {
         $script = '';
-        $script .= $this->addFromLocalizedArray();
+        $script .= $this->addFulltextQuery();
+        $script .= $this->addFulltextOrder();
+
+        return $script;
     }
 
     protected function getNameFromParameters()
