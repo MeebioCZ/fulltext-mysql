@@ -15,7 +15,7 @@ class Fulltext extends Index
     {
         $result = parent::getVendorInfoForType($type);
         if ($type === 'mysql') {
-            $result['Index_type'] = 'FULLTEXT';
+            $result->setParameter('Index_type', 'FULLTEXT');
         }
     }
 

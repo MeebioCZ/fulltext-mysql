@@ -6,13 +6,13 @@ public function orderByFulltext(string $order = Criteria::ASC): self
     if ($order === Criteria::ASC) {
         <?php
             foreach ($columns as $key => $weight) {
-                echo '$this->addAscendingOrderByColumn("fulltext_' . $key . ' * ' . $weight . '")';
+                echo '$this->addAscendingOrderByColumn("fulltext_' . $key . ' * ' . $weight . '");';
             }
         ?>
     } else {
         <?php
             foreach ($columns as $column => $weight) {
-                echo '$this->addDescendingOrderByColumn("fulltext_' . $key . ' * ' . $weight . '")';
+                echo '$this->addDescendingOrderByColumn("fulltext_' . $key . ' * ' . $weight . '");';
             }
         ?>
     }

@@ -37,18 +37,18 @@ class FulltextBehavior extends Behavior
 
     protected function getNameFromParameters()
     {
-        return $this->getParameter('name');
+        return $this->getParameter(self::PARAM_NAME);
     }
 
     protected function getColumnsFromParameters()
     {
-        $columnsParam = $this->getParameter('fulltext_columns');
+        $columnsParam = $this->getParameter(self::PARAM_COLUMNS);
         return $this->parseParamsFromString($columnsParam);
     }
 
     protected function getWeightsFromParameters()
     {
-        $weightsParam = $this->getParameter('fulltext_weights');
+        $weightsParam = $this->getParameter(self::PARAM_WEIGHTS);
         return $this->parseParamsFromString($weightsParam);
     }
 
@@ -96,10 +96,10 @@ class FulltextBehavior extends Behavior
         $this->createIndices();
     }
 
-    protected function createIndex(Table $table, string $columnName): void
+    protected function createIndex(Table $table, Column $column): void
     {
         $fulltext = new Fulltext($this->getNameFromParameters());
-        $fulltext->addColumn($table->getColumn($columnName));
+        $fulltext->addColumn($column);
 
         $table->addIndex($fulltext);
     }
@@ -107,11 +107,11 @@ class FulltextBehavior extends Behavior
     protected function createIndices(): void
     {
         $i18nBehavior = $this->getI18nBehavior();
-        foreach ($this->columnWeightList as $column => $weight) {
-            if ($this->isColumnInTable($this->getTable(), $column)) {
-                $this->createIndex($this->getTable(), $column);
+        foreach ($this->columnWeightList as $columnInfo) {
+            if ($this->isColumnInTable($this->getTable(), $columnInfo->getColumn()->getName())) {
+                $this->createIndex($this->getTable(), $columnInfo->getColumn());
             } else {
-                $this->createIndex($i18nBehavior->getI18nTable(), $column);
+                $this->createIndex($i18nBehavior->getI18nTable(), $columnInfo->getColumn());
             }
         }
     }
@@ -130,19 +130,20 @@ class FulltextBehavior extends Behavior
     protected function checkColumns(): void
     {
         $columns = $this->getColumnsFromParameters();
+
         if (count($columns) === 0) {
             throw new PropelException('Fulltext behavior do not have any columns specified');
         }
 
         $i18nTable = $this->getI18nBehavior() ? $this->getI18nBehavior()->getI18nTable() : null;
         foreach ($columns as $column) {
-            if ($this->isColumnInTable($this->getTable(), $column) || $this->isColumnInTable($i18nTable, $column)) {
+            if (!$this->isColumnInTable($this->getTable(), $column) && !$this->isColumnInTable($i18nTable, $column)) {
                 throw new PropelException('Unknown column ' . $column);
             }
         }
     }
 
-    protected function isColumnInTable(Table $table, string $column): bool
+    protected function isColumnInTable(?Table $table, string $column): bool
     {
         return $table && $table->getColumn($column) !== null;
     }
