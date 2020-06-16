@@ -17,6 +17,8 @@ class Fulltext extends Index
         if ($type === 'mysql') {
             $result->setParameter('Index_type', 'FULLTEXT');
         }
+
+        return $result;
     }
 
 }
