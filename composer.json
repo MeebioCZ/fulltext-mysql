@@ -10,7 +10,7 @@
     "type" : "propel-behavior",
     "extra": {
         "name": "fulltext",
-        "class": "FulltextBehavior"
+        "class": "Ypsylon\\Propel\\Behavior\\Fulltext\\FulltextBehavior"
     },
     "autoload":{
         "psr-4": {
