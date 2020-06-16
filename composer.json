@@ -1,0 +1,22 @@
+{
+    "name": "ypsylon/fulltext-mysql",
+    "description": "Behavior that add support for maria db fulltext indexes to propel",
+    "license": "MIT",
+    "keywords": ["propel", "behavior", "i18n"],
+    "require": {
+        "php": ">= 7.3.0",
+        "propel/propel": "~2.0@dev"
+    },
+    "type" : "propel-behavior",
+    "extra": {
+        "name": "fulltext",
+        "class": "FulltextBehavior"
+    },
+    "autoload":{
+        "psr-4": {
+            "Ypsylon\\Propel\\Behavior\\Fulltext\\":[
+                "src"
+            ]
+        }
+    }
+}
