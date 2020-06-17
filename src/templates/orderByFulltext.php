@@ -4,17 +4,35 @@
 public function orderByFulltext(string $order = Criteria::ASC): self
 {
     if ($order === Criteria::ASC) {
+        $this->addAscendingOrderByColumn("(
         <?php
+            $i = 0;
             foreach ($columns as $key => $weight) {
-                echo '$this->addAscendingOrderByColumn("fulltext_' . $key . ' * ' . $weight . '");';
+                if ($i === 0) {
+                    echo "Fulltext_$key * $weight";
+                } else {
+                    echo " + Fulltext_$key * $weight";
+                }
+
+                $i++;
             }
         ?>
+        )");
     } else {
+        $this->addDescendingOrderByColumn("(
         <?php
+            $i = 0;
             foreach ($columns as $key => $weight) {
-                echo '$this->addDescendingOrderByColumn("fulltext_' . $key . ' * ' . $weight . '");';
+                if ($i === 0) {
+                    echo "Fulltext_$key * $weight";
+                } else {
+                    echo " + Fulltext_$key * $weight";
+                }
+                
+                $i++;
             }
         ?>
+        )");
     }
 
     return $this;
