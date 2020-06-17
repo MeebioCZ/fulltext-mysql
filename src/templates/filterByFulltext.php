@@ -8,7 +8,7 @@ public function filterByFulltext(string $string): self
         // First add columns to select query
         foreach ($columns as $column) {
             echo '
-                $this->withColumn("MATCH(' . $column . ') AGAINST(\' . mysqli::real_escape_string(\$string) . \') IN BOOLEAN MODE)", "fulltext_' . $i . '");
+                $this->withColumn("MATCH(' . $column . ') AGAINST(" . mysqli::real_escape_string(\$string) . ") IN BOOLEAN MODE)", "fulltext_' . $i . '");
             ';
 
             $i++;
@@ -23,6 +23,8 @@ public function filterByFulltext(string $string): self
             } else {
                 echo "fulltext_$i";
             }
+
+            $i++;
         }
         echo " > 0');";
     ?>

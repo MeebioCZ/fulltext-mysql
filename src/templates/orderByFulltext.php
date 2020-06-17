@@ -11,7 +11,7 @@ public function orderByFulltext(string $order = Criteria::ASC): self
         ?>
     } else {
         <?php
-            foreach ($columns as $column => $weight) {
+            foreach ($columns as $key => $weight) {
                 echo '$this->addDescendingOrderByColumn("fulltext_' . $key . ' * ' . $weight . '");';
             }
         ?>
