@@ -24,11 +24,11 @@ public function orderByFulltext(string $order = Criteria::ASC): self
             $i = 0;
             foreach ($columns as $key => $weight) {
                 if ($i === 0) {
-                    echo "Fulltext_$key * $weight";
+                    echo "fulltext_$key * $weight";
                 } else {
-                    echo " + Fulltext_$key * $weight";
+                    echo " + fulltext_$key * $weight";
                 }
-                
+
                 $i++;
             }
         ?>

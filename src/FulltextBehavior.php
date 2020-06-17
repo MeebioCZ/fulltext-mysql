@@ -39,6 +39,14 @@ class FulltextBehavior extends Behavior
         return $script;
     }
 
+    public function objectMethods()
+    {
+        $script = '';
+        $script .= $this->addComputeFulltextValues();
+
+        return $script;
+    }
+
     protected function getNameFromParameters()
     {
         return $this->getParameter(self::PARAM_NAME);
@@ -228,6 +236,13 @@ class FulltextBehavior extends Behavior
     {
         return $this->renderTemplate('orderByFulltext', [
             'columns' => $this->getColumnsWeights()
+        ]);
+    }
+
+    protected function addComputeFulltextValues()
+    {
+        return $this->renderTemplate('computeFulltextValues', [
+            'weights' => $this->getColumnsWeights()
         ]);
     }
 }
