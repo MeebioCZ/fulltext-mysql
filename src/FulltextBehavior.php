@@ -22,10 +22,14 @@ class FulltextBehavior extends Behavior
         self::PARAM_WEIGHTS => '',
     ];
 
+    protected $tableModificationOrder = 100;
+
     /** @var array|\Ypsylon\Propel\Behavior\Fulltext\FulltextColumnInfo[] */
     protected $columnWeightList = [];
 
     private $isUsingI18nTable = null;
+
+    protected $duplicatedBehavior = false;
 
     public function queryMethods($builder) {
         $script = '';
@@ -65,10 +69,12 @@ class FulltextBehavior extends Behavior
     protected function getColumnFromName(string $name): Column
     {
         $i18nBehavior = $this->getI18nBehavior();
-        if ($this->isColumnInTable($this->getTable(), $name)) {
-            return $this->getTable()->getColumn($name);
+        $i18nTable = $i18nBehavior ? $i18nBehavior->getI18nTable() : null;
+
+        if ($this->isColumnInTable($i18nTable, $name)) {
+            return $i18nTable->getColumn($name);
         } else {
-            return $i18nBehavior->getI18nTable()->getColumn($name);
+            return $this->getTable()->getColumn($name);
         }
     }
 
@@ -94,6 +100,39 @@ class FulltextBehavior extends Behavior
         $this->checkColumns();
         $this->fillColumnWeightList();
         $this->createIndices();
+
+        foreach($this->columnWeightList as $columnInfo) {
+            echo sprintf("column with name %s assigned to table %s", $columnInfo->getColumn()->getName(), $columnInfo->getColumn()->getTable()->getName());
+            echo PHP_EOL;
+        }
+
+        echo "is using i18n? ";
+        echo $this->isUsingI18nTable() ? 'YES' : 'NO';
+        echo PHP_EOL;
+
+        echo "is duplicated behavior ";
+        echo $this->duplicatedBehavior ? 'YES' : 'NO';
+        echo PHP_EOL;
+
+        if ($this->isUsingI18nTable() && !$this->duplicatedBehavior) {
+            $this->processI18nTables();
+        }
+    }
+
+    protected function processI18nTables()
+    {
+        $i18nBehavior = $this->getI18nBehavior();
+        if ($i18nBehavior) {
+
+            $copy = clone $this;
+            $copy->duplicatedBehavior = true;
+
+            echo "cloning behavior for i18n";
+            echo PHP_EOL;
+
+            $copy->table = $i18nBehavior->getI18nTable();
+            $i18nBehavior->getI18nTable()->addBehavior($copy);
+        }
     }
 
     protected function createIndex(Table $table, Column $column): void
@@ -106,12 +145,12 @@ class FulltextBehavior extends Behavior
 
     protected function createIndices(): void
     {
-        $i18nBehavior = $this->getI18nBehavior();
+        echo sprintf('creating indices for table %s, fulltext behavior %s', $this->getTable()->getName(), spl_object_hash($this));
+        echo PHP_EOL;
+
         foreach ($this->columnWeightList as $columnInfo) {
             if ($this->isColumnInTable($this->getTable(), $columnInfo->getColumn()->getName())) {
                 $this->createIndex($this->getTable(), $columnInfo->getColumn());
-            } else {
-                $this->createIndex($i18nBehavior->getI18nTable(), $columnInfo->getColumn());
             }
         }
     }
@@ -129,6 +168,10 @@ class FulltextBehavior extends Behavior
 
     protected function checkColumns(): void
     {
+        if ($this->disableSafetyChecks) {
+            return;
+        }
+
         $columns = $this->getColumnsFromParameters();
 
         if (count($columns) === 0) {
