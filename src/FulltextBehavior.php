@@ -101,19 +101,6 @@ class FulltextBehavior extends Behavior
         $this->fillColumnWeightList();
         $this->createIndices();
 
-        foreach($this->columnWeightList as $columnInfo) {
-            echo sprintf("column with name %s assigned to table %s", $columnInfo->getColumn()->getName(), $columnInfo->getColumn()->getTable()->getName());
-            echo PHP_EOL;
-        }
-
-        echo "is using i18n? ";
-        echo $this->isUsingI18nTable() ? 'YES' : 'NO';
-        echo PHP_EOL;
-
-        echo "is duplicated behavior ";
-        echo $this->duplicatedBehavior ? 'YES' : 'NO';
-        echo PHP_EOL;
-
         if ($this->isUsingI18nTable() && !$this->duplicatedBehavior) {
             $this->processI18nTables();
         }
@@ -126,9 +113,6 @@ class FulltextBehavior extends Behavior
 
             $copy = clone $this;
             $copy->duplicatedBehavior = true;
-
-            echo "cloning behavior for i18n";
-            echo PHP_EOL;
 
             $copy->table = $i18nBehavior->getI18nTable();
             $i18nBehavior->getI18nTable()->addBehavior($copy);
@@ -145,9 +129,6 @@ class FulltextBehavior extends Behavior
 
     protected function createIndices(): void
     {
-        echo sprintf('creating indices for table %s, fulltext behavior %s', $this->getTable()->getName(), spl_object_hash($this));
-        echo PHP_EOL;
-
         foreach ($this->columnWeightList as $columnInfo) {
             if ($this->isColumnInTable($this->getTable(), $columnInfo->getColumn()->getName())) {
                 $this->createIndex($this->getTable(), $columnInfo->getColumn());
