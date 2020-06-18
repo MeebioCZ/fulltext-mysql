@@ -45,11 +45,7 @@ class FulltextBehavior extends Behavior
     public function objectMethods()
     {
         $script = '';
-
-        if ($this->hasAnyColumns()) {
-            $script .= $this->addComputeFulltextValues();
-        }
-
+        $script .= $this->addComputeFulltextValues();
         return $script;
     }
 
