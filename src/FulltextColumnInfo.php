@@ -12,10 +12,15 @@ class FulltextColumnInfo
     /** @var float */
     protected $weight;
 
-    public function __construct(Column $column, float $weight)
+    /** @var bool */
+    protected $isDelegatedColumn;
+
+    public function __construct(Column $column, float $weight, bool $isDelegatedColumn)
     {
         $this->column = $column;
         $this->weight = $weight;
+
+        $this->isDelegatedColumn = $isDelegatedColumn;
     }
 
     public function getColumn(): Column
@@ -36,5 +41,15 @@ class FulltextColumnInfo
     public function setWeight(float $weight): void
     {
         $this->weight = $weight;
+    }
+
+    public function isDelegatedColumn(): bool
+    {
+        return $this->isDelegatedColumn;
+    }
+
+    public function setIsDelegatedColumn(bool $isDelegatedColumn): void
+    {
+        $this->isDelegatedColumn = $isDelegatedColumn;
     }
 }

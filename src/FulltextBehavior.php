@@ -33,8 +33,11 @@ class FulltextBehavior extends Behavior
 
     public function queryMethods($builder) {
         $script = '';
-        $script .= $this->addFulltextQuery();
-        $script .= $this->addFulltextOrder();
+
+        if ($this->hasAnyColumns()) {
+            $script .= $this->addFulltextQuery();
+            $script .= $this->addFulltextOrder();
+        }
 
         return $script;
     }
@@ -42,7 +45,10 @@ class FulltextBehavior extends Behavior
     public function objectMethods()
     {
         $script = '';
-        $script .= $this->addComputeFulltextValues();
+
+        if ($this->hasAnyColumns()) {
+            $script .= $this->addComputeFulltextValues();
+        }
 
         return $script;
     }
@@ -66,11 +72,15 @@ class FulltextBehavior extends Behavior
 
     protected function fillColumnWeightList(): void
     {
+        $table = $this->getTable();
+
         $columns = $this->getColumnsFromParameters();
         $weights = $this->getWeightsFromParameters();
 
+        $this->columnWeightList = [];
         foreach ($columns as $key => $column) {
-            $this->columnWeightList[] = new FulltextColumnInfo($this->getColumnFromName($column), $weights[$key] ?? 1);
+            $col = $this->getColumnFromName($column);
+            $this->columnWeightList[] = new FulltextColumnInfo($col, $weights[$key] ?? 1, $col->getTable() !== $table);
         }
     }
 
@@ -223,6 +233,15 @@ class FulltextBehavior extends Behavior
         }
 
         return $result;
+    }
+
+    protected function hasAnyColumns(): bool
+    {
+        $result = array_filter($this->columnWeightList, function (FulltextColumnInfo $item) {
+            return !$item->isDelegatedColumn();
+        });
+
+        return count($result) > 0;
     }
 
     protected function addFulltextQuery()
