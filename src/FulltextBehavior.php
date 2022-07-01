@@ -163,10 +163,6 @@ class FulltextBehavior extends Behavior
 
     protected function checkColumns(): void
     {
-        if ($this->disableSafetyChecks) {
-            return;
-        }
-
         $columns = $this->getColumnsFromParameters();
 
         if (count($columns) === 0) {
