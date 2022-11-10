@@ -107,7 +107,7 @@ class FulltextBehavior extends Behavior
         return array_values($params);
     }
 
-    public function modifyTable()
+    public function modifyTable(): void
     {
         parent::modifyTable();
 
