@@ -3,6 +3,7 @@
 namespace Ypsylon\Propel\Behavior\Fulltext;
 
 use Propel\Generator\Model\Index;
+use Propel\Generator\Model\VendorInfo;
 
 class Fulltext extends Index
 {
@@ -11,7 +12,7 @@ class Fulltext extends Index
         parent::__construct($name);
     }
 
-    public function getVendorInfoForType($type)
+    public function getVendorInfoForType(string $type): VendorInfo
     {
         $result = parent::getVendorInfoForType($type);
         if ($type === 'mysql') {
